@@ -1,0 +1,153 @@
+<!-- public/index.html -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CRM Мебельной Фабрики</title>
+  <style>
+    body { font-family: Arial, sans-serif; }
+        .container { max-width: 800px; margin: 0 auto; }
+    .input-group { margin-bottom: 10px; }
+    label { display: block; margin-bottom: 5px; }
+    input, select, button { padding: 10px; width: 100%; }
+    .hidden { display: none; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    table, th, td { border: 1px solid black; }
+    th, td { padding: 10px; text-align: left; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Добавить заказ</h1>
+    <div class="input-group">
+      <label for="phone">Телефон клиента:</label>
+      <input type="text" id="phone" placeholder="Введите номер телефона">
+    </div>
+    <div class="input-group hidden" id="name-group">
+      <label for="name">Имя клиента:</label>
+      <input type="text" id="name" placeholder="Введите имя клиента">
+    </div>
+    <div class="input-group hidden" id="business-group">
+      <label for="is_business_client">Бизнес клиент:</label>
+      <input type="checkbox" id="is_business_client">
+    </div>
+    <div class="input-group">
+      <label for="sawing">Распил (кол-во листов):</label>
+      <input type="number" id="sawing" placeholder="Введите количество листов">
+    </div>
+    <div class="input-group">
+      <label for="lamination">Закатка (метры):</label>
+      <input type="number" id="lamination" placeholder="Введите количество метров">
+    </div>
+    <button id="check-phone">Проверить телефон</button>
+    <button id="add-order" class="hidden">Добавить заказ</button>
+
+
+
+    <h2>Текущие заказы</h2>
+    <button id="load-orders">Загрузить заказы</button>
+    <table id="orders-table" class="hidden">
+      <thead>
+        <tr>
+          <th>ID заказа</th>
+          <th>Имя клиента</th>
+          <th>Телефон</th>
+          <th>Статус</th>
+          <th>Распил</th>
+          <th>Закатка</th>
+          <th>Стоимость</th>
+          <th>Дата создания</th>
+        </tr>
+      </thead>
+      <tbody id="orders-body">
+        <!-- Заказы будут загружены сюда -->
+      </tbody>
+    </table>
+
+  </div>
+
+  <script>
+    // Проверка телефона
+    document.getElementById('check-phone').addEventListener('click', () => {
+      const phone = document.getElementById('phone').value;
+
+      // Делаем запрос к серверу, чтобы проверить наличие пользователя
+      fetch(`/users/${phone}`, { method: 'GET' })
+        .then(response => response.json())
+        .then(data => {
+          if (data.found) {
+            // Если пользователь найден, скрываем поля для имени и бизнес-клиента
+            document.getElementById('name-group').classList.add('hidden');
+            document.getElementById('business-group').classList.add('hidden');
+            alert('Пользователь найден, вы можете добавить заказ.');
+          } else {
+            // Если пользователь не найден, показываем поля
+            document.getElementById('name-group').classList.remove('hidden');
+            document.getElementById('business-group').classList.remove('hidden');
+          }
+          document.getElementById('add-order').classList.remove('hidden');
+        })
+        .catch(error => {
+          console.error('Ошибка при проверке телефона:', error);
+        });
+    });
+
+    // Добавление заказа
+    document.getElementById('add-order').addEventListener('click', () => {
+      const phone = document.getElementById('phone').value;
+      const sawing = document.getElementById('sawing').value;
+      const lamination = document.getElementById('lamination').value;
+      const name = document.getElementById('name').value || null;
+      const is_business_client = document.getElementById('is_business_client').checked || false;
+
+      fetch('/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone, sawing, lamination, name, is_business_client })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.error) {
+          alert('Ошибка: ' + data.error);
+        } else {
+          alert('Заказ добавлен успешно!');
+        }
+      })
+      .catch(error => {
+        console.error('Ошибка при добавлении заказа:', error);
+      });
+    });
+    // Загрузка и отображение заказов
+    document.getElementById('load-orders').addEventListener('click', () => {
+      fetch('/orders', { method: 'GET' })
+        .then(response => response.json())
+        .then(orders => {
+          const ordersTable = document.getElementById('orders-table');
+          const ordersBody = document.getElementById('orders-body');
+          ordersBody.innerHTML = ''; // Очищаем таблицу
+
+          orders.forEach(order => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${order.id}</td>
+              <td>${order.name}</td>
+              <td>${order.phone}</td>
+              <td>${order.status}</td>
+              <td>${order.sawing}</td>
+              <td>${order.lamination}</td>
+              <td>${order.cost}</td>
+              <td>${new Date(order.created_at).toLocaleString()}</td>
+            `;
+            ordersBody.appendChild(row);
+          });
+
+          ordersTable.classList.remove('hidden');
+        })
+        .catch(error => {
+          console.error('Ошибка при загрузке заказов:', error);
+        });
+    });
+  </script>
+</body>
+</html>
