@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protected Route</title>
+</head>
+<body>
+    <h2>Protected Route</h2>
+    <button id="accessProtected">Access Protected Route</button>
+    <p id="protectedMessage"></p>
+
+    <script>
+        document.getElementById('accessProtected').addEventListener('click', function() {
+            fetch('/protected', {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('protectedMessage').textContent = JSON.stringify(data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('protectedMessage').textContent = 'An error occurred!';
+            });
+        });
+    </script>
+</body>
+</html>

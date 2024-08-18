@@ -1,18 +1,20 @@
-version: '3.8'
-
+version: '3'
 services:
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "3000:3000"
+    volumes:
+      - .:/app
     environment:
-      POSTGRES_USER: zholamanoff
-      POSTGRES_PASSWORD: kb971033
-      POSTGRES_DB: crm_db
-    depends_on:
-      - postgres
-    networks:
-      - app-network
+      DB_USER: zholamanoff
+      DB_PASSWORD: kb971033
+      DB_NAME: crm_db
+      DB_HOST: postgres
+      DB_PORT: 5432
+      JWT_SECRET: b6989f4c50a0b46422a2d123e836c384  # Замените на свой уникальный секретный ключ
 
   postgres:
     image: postgres:13
@@ -22,13 +24,6 @@ services:
       POSTGRES_DB: crm_db
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-    networks:
-      - app-network
 
 volumes:
   postgres_data:
-
-networks:
-  app-network:
