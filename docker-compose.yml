@@ -6,6 +6,29 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NODE_ENV=production
+      POSTGRES_USER: zholamanoff
+      POSTGRES_PASSWORD: kb971033
+      POSTGRES_DB: crm_db
+    depends_on:
+      - postgres
+    networks:
+      - app-network
+
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: zholamanoff
+      POSTGRES_PASSWORD: kb971033
+      POSTGRES_DB: crm_db
     volumes:
-      - ./data:/app/data
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+
+networks:
+  app-network:
