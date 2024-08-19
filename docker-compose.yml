@@ -5,7 +5,7 @@ services:
       context: ./services/landing
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "4000:3000"
     depends_on:
       - auth
       - crm
