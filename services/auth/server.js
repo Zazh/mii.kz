@@ -4,6 +4,7 @@ const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const pool = require('./db');
+const path = require('path');
 
 const app = express();
 
@@ -11,7 +12,7 @@ app.use(bodyParser.json());
 app.use(cors());
 
 // Обслуживание статических файлов из папки public
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Секретный ключ для JWT
 const JWT_SECRET = process.env.JWT_SECRET || 'b6989f4c50a0b46422a2d123e836c384';
@@ -21,12 +22,6 @@ let refreshTokens = []; // Хранение всех действующих Refr
 app.get('/', (req, res) => {
   res.send('Добро пожаловать в сервис аутентификации!');
 });
-
-// Добавление маршрута для защищенного ресурса
-app.get('/protected', authenticateToken, (req, res) => {
-  res.json({ message: 'You have accessed a protected route!', user: req.user });
-});
-
 
 // Маршрут для регистрации пользователя
 app.post('/register', async (req, res) => {
