@@ -39,5 +39,7 @@ jobs:
         username: ${{ secrets.SERVER_USER }}
         key: ${{ secrets.SSH_KEY }}
         script: |
+          cd /home/ubuntu/mii.kz  # Перейти в директорию с docker-compose.yml
           docker-compose pull
           docker-compose up -d
+
