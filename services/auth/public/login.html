@@ -32,9 +32,11 @@
             })
             .then(response => response.json())
             .then(data => {
-                if (data.token) {
-                    // Сохранение токена в LocalStorage
-                    localStorage.setItem('token', data.token);
+                if (data.error) {
+                    document.getElementById('loginMessage').textContent = 'Error: ' + data.error;
+                } else if (data.accessToken) {
+                    // Сохранение accessToken в LocalStorage
+                    localStorage.setItem('token', data.accessToken);
                     document.getElementById('loginMessage').textContent = 'Login successful!';
                 } else {
                     document.getElementById('loginMessage').textContent = 'Login failed!';

@@ -10,17 +10,23 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
+// Обслуживание статических файлов из папки public
+app.use(express.static('public'));
+
 // Секретный ключ для JWT
 const JWT_SECRET = process.env.JWT_SECRET || 'b6989f4c50a0b46422a2d123e836c384';
 let refreshTokens = []; // Хранение всех действующих Refresh Token
 
-// Настройка статической папки для обслуживания файлов
-app.use(express.static('public'));
-
 // Корневой маршрут
 app.get('/', (req, res) => {
-  res.send('Добро пожаловать в CRM систему мебельной фабрики!');
+  res.send('Добро пожаловать в сервис аутентификации!');
 });
+
+// Добавление маршрута для защищенного ресурса
+app.get('/protected', authenticateToken, (req, res) => {
+  res.json({ message: 'You have accessed a protected route!', user: req.user });
+});
+
 
 // Маршрут для регистрации пользователя
 app.post('/register', async (req, res) => {
@@ -100,11 +106,6 @@ app.post('/logout', (req, res) => {
   res.sendStatus(204);
 });
 
-// Защищенный маршрут
-app.get('/protected', authenticateToken, (req, res) => {
-  res.json({ message: 'Это защищенный маршрут', user: req.user });
-});
-
 // Middleware для проверки токена
 function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
@@ -118,7 +119,7 @@ function authenticateToken(req, res, next) {
   });
 }
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
-  console.log(`Сервер запущен на порту ${PORT}`);
+  console.log(`Auth сервис запущен на порту ${PORT}`);
 });
