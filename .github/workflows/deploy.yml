@@ -38,3 +38,4 @@ jobs:
           docker stop mii.kz || true
           docker rm mii.kz || true
           docker run -d --name mii.kz -p 3000:3000 zholamanoff/mii.kz:latest
+          docker system prune -f  # Очищает неиспользуемые контейнеры и образы
