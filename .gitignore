@@ -1,0 +1,4 @@
+nginx/nginx.conf
+node_modules/
+.env
+
