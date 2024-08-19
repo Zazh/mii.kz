@@ -1,0 +1,13 @@
+{
+    "name": "landing",
+    "version": "1.0.0",
+    "description": "Landing service for mii.kz",
+    "main": "server.js",
+    "scripts": {
+      "start": "node server.js"
+    },
+    "dependencies": {
+      "express": "^4.17.1"
+    }
+  }
+  
