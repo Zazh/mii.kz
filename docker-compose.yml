@@ -4,6 +4,9 @@ services:
     build:
       context: ./services/landing
       dockerfile: Dockerfile
+    networks:
+      azai_network:
+        ipv4_address: 172.20.0.2  # Уникальный IP для landing
     ports:
       - "4000:4000"
     depends_on:
@@ -14,6 +17,9 @@ services:
     build:
       context: ./services/auth
       dockerfile: Dockerfile
+    networks:
+      azai_network:
+        ipv4_address: 172.20.0.3  # Уникальный IP для auth
     ports:
       - "3001:3001"
     environment:
@@ -30,6 +36,9 @@ services:
     build:
       context: ./services/crm
       dockerfile: Dockerfile
+    networks:
+      azai_network:
+        ipv4_address: 172.20.0.4  # Уникальный IP для crm
     ports:
       - "3002:3000"
     environment:
@@ -48,8 +57,15 @@ services:
       POSTGRES_USER: zholamanoff
       POSTGRES_PASSWORD: kb971033
       POSTGRES_DB: crm_db
+    networks:
+      azai_network:
+        ipv4_address: 172.20.0.5  # Уникальный IP для postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+networks:
+  azai_network:
+    external: true
+  
 volumes:
   postgres_data:
